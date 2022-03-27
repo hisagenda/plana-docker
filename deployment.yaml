@@ -1,0 +1,49 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plana-deployment
+spec:
+  selector:
+    matchLabels:
+      run: plana-deployment
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: plana-deployment
+    spec:
+      containers:
+        - name: plana-container
+          ### REVIEW: Image tag
+          image: abiola89/plana-image:v1
+          imagePullPolicy: Always
+          ports:
+            ### REVIEW: Port listened to by the component inside the container
+            - containerPort: 3000
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "250m"
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: plana
+  labels:
+    run: plana-service
+
+spec:
+  ports:
+    - port: 3000
+      protocol: TCP
+      name: http
+      targetPort: 3000
+      
+  selector:
+    run: plana-deployment
